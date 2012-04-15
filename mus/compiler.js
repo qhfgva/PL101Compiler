@@ -14,11 +14,28 @@ var endTime = function (time, expr) {
     }
 };
 
+//  21    A0
+// 108    C8
+var convertPitch = function(noteName, midiNum) {
+    var noteLetter = noteName[0];
+    var octave     = noteName[1];
+    var offsets    = {c : 0,
+                      d : 2,
+                      e : 4,
+                      f : 5,
+                      g : 7,
+                      a : 9,
+                      b : 11};
+
+    return 12 + (12 * octave) + offsets[noteLetter];
+    
+};
+
 var compileT = function(time, expr) {
     var _left, _right;
     if (expr.tag == 'note') {
         return [{tag: 'note', 
-                 pitch: expr.pitch,
+     	         pitch: convertPitch(expr.pitch),
                  start: time,
                  dur: expr.dur}];
     } else if (expr.tag == 'rest') {
