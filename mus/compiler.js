@@ -4,15 +4,34 @@ var endTime = function (time, expr) {
         return time + expr.dur;
     } else if (expr.tag == 'rest') {
         return time + expr.duration;
+    } else if (expr.tag == 'repeat') {
+	return time + (expr.section.count * getDuration(expr.section));
     } else if (expr.tag == 'seq') {
         leftTime = endTime(time, expr.left);
         return  endTime(leftTime, expr.right);
-    } else {
+    } else { // par
         leftTime = endTime(time, expr.left);
         rightTime = endTime(time, expr.right);
         return Math.max(leftTime, rightTime);
     }
 };
+
+var getDuration = function(expr) {
+    var leftTime, rightTime;
+    if (expr.tag == 'note') {
+        return expr.dur;
+    } else if (expr.tag == 'rest') {
+        return expr.duration;
+    } else if (expr.tag == 'repeat') {
+	return (expr.section.count * getDuration(expr.section));
+    } else if (expr.tag == 'seq') {
+        return  (getDuration(expr.left) + getDuration(expr.right));
+    } else { // par
+        leftTime = getDuration(expr.left);
+        rightTime = getDuration(expr.right);
+        return Math.max(leftTime, rightTime);
+    }
+}
 
 //  21    A0
 // 108    C8
@@ -33,6 +52,9 @@ var convertPitch = function(noteName, midiNum) {
 
 var compileT = function(time, expr) {
     var _left, _right;
+    var repeats = [];
+    var repeatVal;
+    var repeatDur = 0;
     if (expr.tag == 'note') {
         return [{tag: 'note', 
      	         pitch: convertPitch(expr.pitch),
@@ -44,7 +66,14 @@ var compileT = function(time, expr) {
         _left = compileT(time, expr.left);
         _right = compileT(endTime(time, expr.left), expr.right);
         return _left.concat(_right);
-    } else {
+    } else if (expr.tag == 'repeat') {
+	repeatDur = getDuration(expr.section);
+	for (var i=0; i < expr.count; i++){
+	    repeatVal = compileT(time+i*repeatDur, expr.section);
+	    repeats = repeats.concat(compileT(time+i*repeatDur, expr.section));
+	}
+	return repeats;
+    } else {  // 'par'
         //var Math.max(); 
         _left = compileT(time, expr.left);
         _right = compileT(time, expr.right);
@@ -84,3 +113,11 @@ var melody_mus_rest =
 
 console.log(melody_mus_rest);
 console.log(compile(melody_mus_rest));
+
+
+var melody_mus_repeat = 
+   { tag: 'repeat',
+     section: { tag: 'note', pitch: 'c4', dur: 250 },
+     count: 3 };
+console.log(melody_mus_repeat);
+console.log(compile(melody_mus_repeat));
