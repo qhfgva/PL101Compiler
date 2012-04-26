@@ -18,9 +18,15 @@ assert.deepEqual(parse("(+ x 3)"), ["+", "x", "3"]);
 assert.deepEqual(parse("(+ 1 (f x 3 y))"), ["+", "1", ["f", "x", "3", "y"]]);
 
 // space tests
-assert.deepEqual( parse("(a  b c)"), ["a", "b", "c"] );
-assert.deepEqual( parse(" (a  b c)"), ["a", "b", "c"] );
-assert.deepEqual( parse(" (a  b  c ) "), ["a", "b", "c"] );
-
-//assert.deepEqual(parse("\t(+ 1  ( f x \r 3 y)\n) "), ["+", "1", ["f", "x", "3", "y"]]);
+assert.deepEqual(parse("(a  b c)"), ["a", "b", "c"] );
+assert.deepEqual(parse(" (a  b c)"), ["a", "b", "c"] );
+assert.deepEqual(parse(" (a  b  c ) "), ["a", "b", "c"] );
 assert.deepEqual(parse("\t (+ 1\n  ( f x \n \t 3 y)\n) "), ["+", "1", ["f", "x", "3", "y"]]);
+
+// quote tests
+assert.deepEqual(parse("(quote a)"), ["quote", "a"]);
+assert.deepEqual(parse("'a"), ["quote", "a"]);
+assert.deepEqual(parse("'(a)"), ["quote", ["a"]]);
+assert.deepEqual(parse("'(a b (c d))"), ["quote", ["a", "b", ["c", "d"]]]);
+assert.deepEqual(parse("(a b '(c d))"), ["a", "b", ["quote", ["c", "d"]]]);
+

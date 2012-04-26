@@ -1,7 +1,7 @@
 start =
     expression
 
-whitespace = 
+whitespace =  
     " "
     / "\t"
     / "\n"
@@ -12,6 +12,8 @@ expression =
         {return x;}
     / whitespace* "(" whitespace* x:wordlist whitespace* ")" whitespace* 
         {return x;}
+    / whitespace* "'" e:expression whitespace*
+        { return ["quote", e]; }
 
 validchar
     = [0-9a-zA-Z_?!+\-=@#$%^&*/.]
@@ -19,7 +21,6 @@ validchar
 atom =
     chars:validchar+
         { return chars.join(""); }
-
 
 wordlist =
     w:expression rest:space_and_word*
