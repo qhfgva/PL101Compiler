@@ -1,0 +1,27 @@
+start =
+    expression
+
+expression =
+    x:atom 
+    /"(" x:wordlist ")"
+    {return x;}
+
+validchar
+    = [0-9a-zA-Z_?!+\-=@#$%^&*/.]
+
+atom =
+    chars:validchar+
+        { return chars.join(""); }
+
+
+wordlist =
+    w:expression rest:space_and_word*
+    { return [w].concat(rest); }
+
+space_and_word =
+    " " w:expression
+    {return w; }
+
+word =
+    w:atom
+
