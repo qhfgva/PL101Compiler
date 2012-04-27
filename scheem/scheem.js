@@ -30,3 +30,5 @@ assert.deepEqual(parse("'(a)"), ["quote", ["a"]]);
 assert.deepEqual(parse("'(a b (c d))"), ["quote", ["a", "b", ["c", "d"]]]);
 assert.deepEqual(parse("(a b '(c d))"), ["a", "b", ["quote", ["c", "d"]]]);
 
+// comment
+assert.deepEqual(parse("(quote a) ;; foobar "), ["quote", "a"]);

@@ -7,12 +7,15 @@ whitespace =
     / "\n"
     / "\r"
 
+comment = 
+    ";;" .* 
+
 expression =
-    x:atom
+    x:atom comment*
         {return x;}
-    / whitespace* "(" whitespace* x:wordlist whitespace* ")" whitespace* 
+    / whitespace* "(" whitespace* x:wordlist whitespace* ")" whitespace* comment*
         {return x;}
-    / whitespace* "'" e:expression whitespace*
+    / whitespace* "'" e:expression whitespace* comment*
         { return ["quote", e]; }
 
 validchar
