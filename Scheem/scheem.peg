@@ -1,0 +1,40 @@
+start =
+    expression
+
+whitespace =  
+    " "
+    / "\t"
+    / "\n"
+    / "\r"
+
+comment = 
+    ";;" .* 
+
+expression =
+    x:atom comment*
+        {return x;}
+    / whitespace* "(" whitespace* x:wordlist whitespace* ")" whitespace* comment*
+        {return x;}
+    / whitespace* "'" e:expression whitespace* comment*
+        { return ["quote", e]; }
+
+validchar
+    = [0-9a-zA-Z_?!+\-=@#$%^&*/.]
+
+atom =
+    nums:[0-9]+
+        { return parseInt(nums.join("")); }
+    / chars:validchar+
+        { return chars.join(""); }
+
+wordlist =
+    w:expression rest:space_and_word*
+    { return [w].concat(rest); }
+
+space_and_word =
+    whitespace+ w:expression
+    {return w; }
+
+word =
+    w:atom
+
